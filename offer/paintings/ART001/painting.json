@@ -1,0 +1,57 @@
+{
+  "code": "ART001",
+  "title": "Vernissage 2",
+  "artist": "Petro Lebedinets",
+  "year": "2008",
+  "medium": "Oil on canvas",
+  "description": "Vernissage 2, 2008. Oil on canvas.",
+  "images": [
+    "image1.jpg",
+    "image2.jpg"
+  ],
+  "priceGbp": 10000,
+  "shares": 10000,
+  "offeredShares": 4900,
+  "sharePriceGbp": 1,
+  "valuer": "TimaxArt Limited",
+  "custodian": "TimaxArt Limited",
+  "owner": "TimaxArt Limited",
+  "reportUri": "",
+  "artworkUri": "https://app.timaxpay.com/offer/paintings/ART001/metadata.json",
+  "createdAt": "2026-11-23T10:54:33.734Z",
+  "updatedAt": "2026-11-23T10:54:33.735Z",
+  "deployment": {
+    "chain": {
+      "name": "Arc",
+      "chainId": 5042,
+      "rpc": "https://rpc.mainnet.arc.io",
+      "explorer": ""
+    },
+    "contracts": {
+      "hook": "0xdbdf4cbaa958692092b46b53b50e49e0b9712880",
+      "router": "0xa52aaae57645bb796cb449502810579d31f5ba43",
+      "share": "0x7b597b8D121D2E5DAEF5649dc1d8AE79E8E6Dd47",
+      "poolManager": "0x8366a39CC670B4001A1121B8F6A443A643e40951",
+      "morpho": "0x34CD04070dD72b14E241112F6d83812Df5Af7fCD",
+      "safe": "0x54030De9e5AC2De5E9d1E073a914B527A314C7d3",
+      "note": "0x4Fa0ad4D822d461E4bf53e9Ff0771Ab771fAE135"
+    },
+    "quotes": [
+      {
+        "symbol": "USDC",
+        "address": "0x3600000000000000000000000000000000000000",
+        "decimals": 6,
+        "oracle": "0xD78F940F3bE804127AA39E4d16d9Ec2338cd7832",
+        "marketId": "0x251cd39c79406c9854fd09aef9cc57ab97e7caa0acc1a792d5714c5708835c2f"
+      },
+      {
+        "symbol": "EURC",
+        "address": "0xbef5f6d51cb62b58e6a8f77868681825c6fe21c1",
+        "decimals": 6,
+        "oracle": "0xedB1cf7fed68c49760fdBd6FFAFF121B9f20aA2d",
+        "marketId": "0xab4650d45e77da93da2bd5d567a0bac4726ca57a214866450670417bf30f5f57"
+      }
+    ],
+    "lltv": 0.385
+  }
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "code": "ART001",
+    "title": "Vernissage 2",
+    "priceGbp": 10000,
+    "image": "paintings/ART001/image1.jpg",
+    "launched": true
+  },
+  {
+    "code": "ART002",
+    "title": "Dreams",
+    "priceGbp": 100000,
+    "image": null,
+    "launched": true
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "chainId": "5042",
+  "createdAt": 1795528893695,
+  "meta": {
+    "name": "ART002 accept oracle ownership"
+  },
+  "transactions": [
+    {
+      "to": "0x2E26306a80861584Ce81AFD9C41d2076766aF642",
+      "value": "0",
+      "data": "0x79ba5097"
+    },
+    {
+      "to": "0x685990C09F20c3Eb03a1f17F70f85719b5A172bd",
+      "value": "0",
+      "data": "0x79ba5097"
+    }
+  ]
+}

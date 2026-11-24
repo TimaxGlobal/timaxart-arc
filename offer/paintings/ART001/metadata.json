@@ -1,0 +1,27 @@
+{
+  "name": "Vernissage 2 (ART001)",
+  "description": "Vernissage 2, 2008. Oil on canvas. Fractional shares of one physical painting valued at GBP 10000, split into 10000 shares.",
+  "image": "https://app.timaxpay.com/offer/paintings/ART001/image1.jpg",
+  "attributes": [
+    {
+      "trait_type": "Artist",
+      "value": "Petro Lebedinets"
+    },
+    {
+      "trait_type": "Year",
+      "value": "2008"
+    },
+    {
+      "trait_type": "Medium",
+      "value": "Oil on canvas"
+    },
+    {
+      "trait_type": "Valuation (GBP)",
+      "value": 10000
+    },
+    {
+      "trait_type": "Total shares",
+      "value": 10000
+    }
+  ]
+}

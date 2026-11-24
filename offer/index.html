@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Art Share Offer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: gallery label. A framed painting beside the terms, then three ways to take part, then what secures it and what can go wrong. */
+:root {
+  --bg: #F1F3F4; --surface: #FFFFFF; --ink: #12191C; --muted: #58676C; --line: #D3DADD;
+  --accent: #0A6C8C; --accent-ink: #FFFFFF;
+  --ok: #17704A; --ok-bg: #DDF1E6; --bad: #B3261E; --bad-bg: #F8E0DD; --warn: #7A5200; --warn-bg: #F6EBCF;
+  --display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1A1D; --surface: #15262A; --ink: #E6EEF0; --muted: #93A6AB; --line: #263D42;
+    --accent: #4BB6D6; --accent-ink: #06222B;
+    --ok: #5FD39A; --ok-bg: #12362A; --bad: #FF8F86; --bad-bg: #3C1B19; --warn: #E7B65B; --warn-bg: #3A2D12;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1A1D; --surface: #15262A; --ink: #E6EEF0; --muted: #93A6AB; --line: #263D42;
+  --accent: #4BB6D6; --accent-ink: #06222B;
+  --ok: #5FD39A; --ok-bg: #12362A; --bad: #FF8F86; --bad-bg: #3C1B19; --warn: #E7B65B; --warn-bg: #3A2D12;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { color-scheme: light; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--body);
+  padding-block: 24px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.1; }
+h2 { font-size: 20px; }
+h3 { font-size: 16px; }
+p { margin: 0; }
+a { color: var(--accent); }
+.label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.banner { border: 1px solid var(--warn); background: var(--warn-bg); color: var(--warn); border-radius: 8px; padding: 10px 14px; font-weight: 500; }
+.preview { border: 1px dashed var(--line); border-radius: 8px; padding: 10px 14px; color: var(--muted); }
+.hero { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
+@media (min-width: 820px) { .hero { grid-template-columns: 5fr 6fr; gap: 36px; } }
+.canvas { width: 100%; max-width: 100%; }
+.canvas img { width: 100%; height: auto; display: block; border-radius: 2px; }
+.canvas.empty { aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px; border: 1px dashed var(--line); color: var(--muted); font-size: 13px; }
+.thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.thumbs button { border: 2px solid transparent; padding: 0; background: none; border-radius: 4px; cursor: pointer; width: 64px; height: 48px; overflow: hidden; }
+.thumbs button.on { border-color: var(--accent); }
+.thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.canvas video { width: 100%; height: auto; display: block; border-radius: 2px; background: #000; }
+.thumbs button { position: relative; }
+.thumbs button.vid::after { content: "\25B6"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; background: rgba(0,0,0,.35); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips:empty { display: none; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; cursor: pointer; font-weight: 500; }
+.chip[aria-current="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.plaque { margin-top: 12px; display: flex; flex-direction: column; gap: 2px; }
+.stack { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px 20px; }
+.fact { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fact b { font: 500 20px var(--mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.fact small { color: var(--muted); }
+.cards { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 900px) { .cards { grid-template-columns: 1.3fr 1fr 1fr; align-items: start; } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; align-self: flex-start; }
+.seg button { border: 0; background: transparent; color: var(--ink); padding: 7px 12px; font: 500 13px var(--body); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+button, input { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn { border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); border-radius: 8px; padding: 10px 14px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; display: block; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field input { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 10px; width: 100%; min-width: 0; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; border: 1px dashed var(--line); border-radius: 8px; padding: 10px 12px; }
+.kv span:nth-child(even) { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.kv span:nth-child(odd) { color: var(--muted); }
+.pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; }
+.pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.bad { background: var(--bad-bg); color: var(--bad); }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }
+.status { min-height: 1.4em; }
+.status.err { color: var(--bad); }
+.status.good { color: var(--ok); }
+.two { display: grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 820px) { .two { grid-template-columns: 1fr 1fr; } }
+ul.tight { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+.addr { overflow-wrap: anywhere; font: 12px var(--mono); }
+section { display: flex; flex-direction: column; gap: 14px; }
+footer { color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) { .btn { transition: opacity .15s; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="chips" id="picker"></div>
+  <div id="banner"></div>
+  <header class="hero">
+    <div>
+      <div class="canvas" id="canvas"></div>
+      <div class="thumbs" id="thumbs"></div>
+      <div class="plaque"><b id="plaqueTitle"></b><span class="muted" id="plaqueSub"></span></div>
+    </div>
+    <div class="stack">
+      <div class="stack" style="gap:8px">
+        <span class="label">Art share offer</span>
+        <h1 id="title"></h1>
+        <p class="muted" id="lede"></p>
+        <p id="desc"></p>
+      </div>
+      <div class="facts" id="facts"></div>
+    </div>
+  </header>
+
+  <section aria-labelledby="partH">
+    <h2 id="partH">Three ways to take part</h2>
+    <div class="cards">
+      <div class="card" id="buyCard">
+        <div><h3>Buy shares</h3><p class="muted">Own a part of the painting. Pay in stablecoins from your own wallet.</p></div>
+        <div class="seg" id="quoteSeg" role="group" aria-label="Pay with"></div>
+        <div class="kv" id="priceKv"></div>
+        <div class="field"><label class="label" for="amt" id="amtLabel">You pay</label><input id="amt" inputmode="decimal" value="100"></div>
+        <div class="kv" id="estKv"></div>
+        <div id="walletRow" class="stack" style="gap:10px"></div>
+        <button class="btn" id="buyBtn" type="button" disabled>Buy shares</button>
+        <p class="status" id="status" role="status"></p>
+      </div>
+      <div class="card" id="lendCard"></div>
+      <div class="card" id="borrowCard"></div>
+    </div>
+  </section>
+
+  <section class="two">
+    <div class="stack" style="gap:10px">
+      <h2>What backs the shares</h2>
+      <ul class="tight" id="backs"></ul>
+    </div>
+    <div class="stack" style="gap:10px">
+      <h2>What can go wrong</h2>
+      <ul class="tight">
+        <li>The painting can lose value. Shares and the credit market move with its valuation, and a share price in the pool can fall below the valuation.</li>
+        <li>Selling can be slow. Only a small amount of liquidity sits in the pool, so large sales move the price.</li>
+        <li>Borrowing against shares can end in liquidation. If the valuation falls or you borrow close to the limit, your shares can be sold to repay the loan.</li>
+        <li>Lenders depend on the valuation and on the sale of seized shares. A loan is covered by shares in one painting, not by cash.</li>
+        <li>Only verified wallets can hold or trade the shares. Losing access to a verified wallet can lock your position.</li>
+        <li>Smart contracts can contain errors. These are new contracts that have not had the track record of older protocols.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer id="footer"></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+<script src="config.js"></script>
+<script src="paintings.js" onerror="void 0"></script>
+<script>
+// Painting data comes from offer/paintings.js (built from offer/paintings/<CODE>/painting.json). config.js supplies the example shown before any painting is added.
+const ALL = window.ART_PAINTINGS || {}, CODES = Object.keys(ALL);
+const wanted = decodeURIComponent(location.hash.slice(1)).toUpperCase();
+const CODE = ALL[wanted] ? wanted : CODES[0];
+const C = buildConfig();
+function buildConfig() {
+  const base = Object.assign({}, window.ART_OFFER), P = ALL[CODE];
+  if (!P) return base;
+  const d = P.deployment || {};
+  return Object.assign(base, {
+    painting: { title: P.title, code: P.code, artist: P.artist || '', year: P.year || '', medium: P.medium || '', description: P.description || '', images: P.images || [], video: P.video || '', imageUrl: (P.images || [])[0] || '',
+      appraisalGbp: P.priceGbp, valuer: P.valuer || 'a valuer to be confirmed', reportUri: P.reportUri || 'not published yet', custodian: P.custodian || 'a custodian to be confirmed', owner: P.owner || 'the holding company (to be confirmed)' },
+    offer: { totalShares: P.shares, offeredShares: P.offeredShares, sharePriceGbp: P.priceGbp / P.shares },
+    chain: d.chain || null, contracts: d.contracts || null, quotes: d.quotes || [], lltv: d.lltv || base.lltv
+  });
+}
+const $ = id => document.getElementById(id);
+const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const k in attrs) { if (k === 'class') e.className = attrs[k]; else if (k === 'text') e.textContent = attrs[k]; else e.setAttribute(k, attrs[k]); } kids.forEach(x => e.append(x)); return e; };
+const num = (n, d = 2) => Number(n).toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d });
+const short = a => a ? a.slice(0, 6) + '…' + a.slice(-4) : '—';
+
+const ABI = {
+  router: ['function swapExactIn((address currency0,address currency1,uint24 fee,int24 tickSpacing,address hooks) key,bool zeroForOne,uint256 amountIn,uint256 minOut,uint256 deadline) returns (uint256)'],
+  hook: ['function kyc(address) view returns (bool)', 'function currentFee(bytes32) view returns (uint24)'],
+  pm: ['function extsload(bytes32 slot) view returns (bytes32)'],
+  erc20: ['function balanceOf(address) view returns (uint256)', 'function allowance(address,address) view returns (uint256)', 'function approve(address,uint256) returns (bool)'],
+  oracle: ['function pricePerShare() view returns (uint256)', 'function updatedAt() view returns (uint64)', 'function isStale() view returns (bool)'],
+  morpho: ['function market(bytes32) view returns (uint128,uint128,uint128,uint128,uint128,uint128)', 'function idToMarketParams(bytes32) view returns (address,address,address,address,uint256)'],
+  irm: ['function borrowRateView((address,address,address,address,uint256) mp,(uint128,uint128,uint128,uint128,uint128,uint128) m) view returns (uint256)']
+};
+const FEE_DYNAMIC = 0x800000, SPACING = 60;
+
+// ---------- pure helpers (also unit-tested offline) ----------
+function sortCurrencies(a, b) { return BigInt(a) < BigInt(b) ? [a, b] : [b, a]; }
+function poolKey(share, quote, hook) { const [c0, c1] = sortCurrencies(share, quote); return { currency0: c0, currency1: c1, fee: FEE_DYNAMIC, tickSpacing: SPACING, hooks: hook }; }
+function poolId(k) { return ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(['address', 'address', 'uint24', 'int24', 'address'], [k.currency0, k.currency1, k.fee, k.tickSpacing, k.hooks])); }
+function slot0Slot(id) { return ethers.keccak256(ethers.solidityPacked(['bytes32', 'bytes32'], [id, ethers.zeroPadValue('0x06', 32)])); }
+function sqrtFromSlot0(word) { return BigInt(word) & ((1n << 160n) - 1n); }
+function quotePerShare(sqrtP, shareIs0, quoteDecimals) {
+  const r = Number(sqrtP) / 2 ** 96, ratio = r * r;            // token1 raw per token0 raw
+  const raw = shareIs0 ? ratio : 1 / ratio;                    // quote raw per share raw
+  return raw * 1e18 / 10 ** quoteDecimals;
+}
+
+// ---------- state ----------
+const S = { provider: null, signer: null, user: null, qi: 0, q: [], data: {} };
+const contracts = C.contracts, hasChain = !!(C.chain && contracts && C.quotes && C.quotes.length);
+const readProvider = () => S.provider || (C.chain && C.chain.rpc ? (S._ro = S._ro || new ethers.JsonRpcProvider(C.chain.rpc)) : null);
+
+function renderStatic() {
+  const p = C.painting, o = C.offer;
+  document.title = p.title + ' · Art Share Offer';
+  $('title').textContent = p.title;
+  $('plaqueTitle').textContent = p.title + ' (' + p.code + ')';
+  $('plaqueSub').textContent = [p.artist, p.year, p.medium].filter(Boolean).join(' · ');
+  $('desc').textContent = p.description || '';
+  if (CODES.length > 1) CODES.forEach(c => { const b = el('button', { type: 'button', class: 'chip', 'aria-current': String(c === CODE), text: ALL[c].title }); b.onclick = () => { location.hash = c; location.reload(); }; $('picker').append(b); });
+  $('lede').textContent = (p.medium ? p.medium + ', valued' : 'Valued') + ' at £' + num(p.appraisalGbp, 0) + ' and split into ' + num(o.totalShares, 0) + ' shares. Buy a share, lend against the painting, or borrow against shares you hold.';
+  const imgs = p.images && p.images.length ? p.images : (p.imageUrl ? [p.imageUrl] : []);
+  const media = (p.video ? [{ video: p.video }] : []).concat(imgs.map(u => ({ img: u })));
+  if (media.length) {
+    const alt = p.title + (p.artist ? ' by ' + p.artist : '');
+    const show = m => {
+      $('canvas').textContent = '';
+      if (m.video) { const v = el('video', { muted: '', loop: '', playsinline: '', controls: '', autoplay: '', preload: 'metadata', 'aria-label': 'Short video of ' + alt }); v.muted = true; if (imgs[0]) v.poster = imgs[0]; v.src = m.video; $('canvas').append(v); const pr = v.play && v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+      else { const i = el('img', { alt }); i.src = m.img; $('canvas').append(i); }
+    };
+    show(media[0]);
+    if (media.length > 1) media.forEach((m, i) => {
+      const b = el('button', { type: 'button', 'aria-label': m.video ? 'Video' : 'Image ' + (i + 1 - (p.video ? 1 : 0)), class: (i === 0 ? 'on ' : '') + (m.video ? 'vid' : '') }), t = el('img', { alt: '' }); t.src = m.img || imgs[0] || ''; b.append(t);
+      b.onclick = () => { show(m); $('thumbs').querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); };
+      $('thumbs').append(b);
+    });
+  } else { $('canvas').classList.add('empty'); $('canvas').textContent = 'Image of the painting to be added'; }
+  if (C.draft) $('banner').append(el('div', { class: 'banner', text: 'Draft. This page is not approved for a public offer. Do not share it with clients until your legal review is done.' }));
+  if (!hasChain) $('banner').append(el('div', { class: 'preview', text: 'Preview mode: the contracts are not connected yet, so buying is switched off and live figures show a dash.' }));
+  $('backs').append(
+    el('li', { text: 'One painting, valued at £' + num(p.appraisalGbp, 0) + ' by ' + p.valuer + '. The valuation report is fixed on chain by its hash.' }),
+    el('li', { text: 'Held by ' + p.custodian + '. Shares are claims on the painting through ' + p.owner + '.' }),
+    el('li', { text: 'Lending uses that valuation, never the pool price, so one trade cannot trigger a liquidation. A lower valuation applies at once; a higher one is limited to +10% a week.' }),
+    el('li', { text: 'Only verified wallets can hold or trade the shares.' })
+  );
+  renderFacts(); renderLendBorrow();
+  const f = $('footer'); f.textContent = '';
+  if (contracts) {
+    f.append(el('p', { text: 'Contracts on ' + C.chain.name + ' (chain ' + C.chain.chainId + ')' }));
+    for (const k of ['share', 'router', 'hook', 'morpho']) if (contracts[k]) f.append(el('p', { class: 'addr', text: k + ': ' + contracts[k] }));
+  }
+  f.append(el('p', { text: 'Valuation report: ' + p.reportUri }));
+}
+
+function renderFacts() {
+  const o = C.offer, d = S.data, q = S.q[S.qi];
+  const rows = [
+    ['Appraised value', '£' + num(C.painting.appraisalGbp, 0), 'independent valuation'],
+    ['Shares in total', num(o.totalShares, 0), '£' + num(o.sharePriceGbp) + ' each at valuation'],
+    ['On offer now', d.forSale != null ? num(d.forSale, 0) : num(o.offeredShares, 0), d.forSale != null ? 'left in the pools' : 'planned for sale'],
+    ['Launch fee now', q && q.fee != null ? num(q.fee / 10000) + '%' : '—', 'falls to 0.50% over 3 days']
+  ];
+  $('facts').textContent = '';
+  rows.forEach(r => $('facts').append(el('div', { class: 'fact' }, el('span', { class: 'label', text: r[0] }), el('b', { text: r[1] }), el('small', { text: r[2] }))));
+}
+
+function renderLendBorrow() {
+  const q = S.q[S.qi], sym = q ? q.symbol : 'USDC', m = q && q.market;
+  const pct = v => v == null ? '—' : num(v * 100) + '%';
+  const lend = $('lendCard'), borrow = $('borrowCard'); lend.textContent = ''; borrow.textContent = '';
+  lend.append(el('div', {}, el('h3', { text: 'Lend ' + sym }), el('p', { class: 'muted', text: 'Earn interest from borrowers who post shares as collateral.' })),
+    el('div', { class: 'kv' }, el('span', { text: 'Supply rate' }), el('span', { text: m ? pct(m.supplyApy) : '—' }), el('span', { text: 'Utilisation' }), el('span', { text: m ? pct(m.util) : '—' }), el('span', { text: 'Supplied' }), el('span', { text: m ? num(m.supplied, 0) + ' ' + sym : '—' })),
+    el('a', { class: 'btn ghost', href: C.appUrl, target: '_blank', rel: 'noopener', text: 'Lend in TimaxPay' }));
+  borrow.append(el('div', {}, el('h3', { text: 'Borrow ' + sym }), el('p', { class: 'muted', text: 'Post shares, keep ownership, get cash.' })),
+    el('div', { class: 'kv' }, el('span', { text: 'Borrow rate' }), el('span', { text: m ? pct(m.borrowApy) : '—' }), el('span', { text: 'Max loan to value' }), el('span', { text: pct(C.lltv) }), el('span', { text: 'Valuation used' }), el('span', { text: q && q.oracle != null ? num(q.oracle, 4) + ' ' + sym + ' / share' : '—' })),
+    el('a', { class: 'btn ghost', href: C.appUrl, target: '_blank', rel: 'noopener', text: 'Borrow in TimaxPay' }));
+}
+
+function renderBuy() {
+  const q = S.q[S.qi], sym = q ? q.symbol : (C.quotes[S.qi] ? C.quotes[S.qi].symbol : 'USDC');
+  $('quoteSeg').textContent = '';
+  (C.quotes.length ? C.quotes : [{ symbol: 'USDC' }, { symbol: 'EURC' }]).forEach((x, i) => {
+    const b = el('button', { type: 'button', 'aria-pressed': String(i === S.qi), text: x.symbol }); b.onclick = () => { S.qi = i; renderStatic2(); if (hasChain) refresh().catch(e => console.warn(e)); }; $('quoteSeg').append(b);
+  });
+  $('amtLabel').textContent = 'You pay (' + sym + ')';
+  const price = q && q.spot, fee = q && q.fee != null ? q.fee / 1e6 : null;
+  $('priceKv').textContent = '';
+  $('priceKv').append(el('span', { text: 'Pool price' }), el('span', { text: price ? num(price, 4) + ' ' + sym : '—' }), el('span', { text: 'Valuation price' }), el('span', { text: q && q.oracle != null ? num(q.oracle, 4) + ' ' + sym : '—' }), el('span', { text: 'Swap fee now' }), el('span', { text: fee != null ? num(fee * 100) + '%' : '—' }));
+  const a = parseFloat($('amt').value), est = price && a > 0 ? a / price * (1 - (fee || 0)) : null;
+  $('estKv').textContent = '';
+  $('estKv').append(el('span', { text: 'You receive about' }), el('span', { text: est ? num(est, 2) + ' ' + C.painting.code : '—' }), el('span', { text: 'Share of painting' }), el('span', { text: est ? num(est / C.offer.totalShares * 100, 3) + '%' : '—' }));
+  const row = $('walletRow'); row.textContent = '';
+  if (!hasChain) { $('buyBtn').disabled = true; return; }
+  if (!S.user) { row.append(el('p', { class: 'muted', text: 'Connect your wallet to see whether you are verified and to buy.' })); const b = el('button', { class: 'btn ghost', type: 'button', text: 'Connect wallet' }); b.onclick = connect; row.append(b); $('buyBtn').disabled = true; return; }
+  row.append(el('div', { class: 'kv' }, el('span', { text: 'Wallet' }), el('span', { text: short(S.user) }), el('span', { text: 'Verified' }), el('span', {}, el('span', { class: 'pill ' + (S.data.kyc ? 'ok' : 'bad'), text: S.data.kyc ? 'Verified' : 'Not verified' })),
+    el('span', { text: sym + ' balance' }), el('span', { text: S.data.bal != null ? num(S.data.bal, 2) : '—' }), el('span', { text: C.painting.code + ' held' }), el('span', { text: S.data.held != null ? num(S.data.held, 2) : '—' })));
+  if (!S.data.kyc) row.append(el('a', { class: 'btn ghost', href: C.appUrl, target: '_blank', rel: 'noopener', text: 'Get verified in TimaxPay' }));
+  $('buyBtn').disabled = !(S.data.kyc && a > 0 && price);
+}
+
+// ---------- chain reads ----------
+async function refresh() {
+  const rp = readProvider(); if (!hasChain || !rp) { renderBuy(); return; }
+  const pm = new ethers.Contract(contracts.poolManager, ABI.pm, rp), hook = new ethers.Contract(contracts.hook, ABI.hook, rp);
+  const shareT = new ethers.Contract(contracts.share, ABI.erc20, rp);
+  S.q = await Promise.all(C.quotes.map(async x => {
+    const out = { symbol: x.symbol, address: x.address, decimals: x.decimals, oracle: x.oracle };
+    try {
+      const k = poolKey(contracts.share, x.address, contracts.hook), id = poolId(k);
+      out.key = k; out.id = id; out.shareIs0 = BigInt(contracts.share) < BigInt(x.address);
+      const sq = sqrtFromSlot0(await pm.extsload(slot0Slot(id)));
+      if (sq > 0n) { out.spot = quotePerShare(sq, out.shareIs0, x.decimals); out.fee = Number(await hook.currentFee(id)); }
+    } catch (e) { console.warn('pool read', x.symbol, e); }
+    try { if (x.oracle) { const o = new ethers.Contract(x.oracle, ABI.oracle, rp); out.oracle = Number(await o.pricePerShare()) / 10 ** x.decimals; out.stale = await o.isStale(); } } catch (e) { out.oracle = null; }
+    try { if (x.marketId) out.market = await readMarket(rp, x); } catch (e) { console.warn('market read', x.symbol, e); }
+    return out;
+  }));
+  try { S.data.forSale = Number(ethers.formatUnits(await shareT.balanceOf(contracts.poolManager), 18)); } catch (e) {}
+  if (S.user) await readUser(rp);
+  renderStatic2();
+}
+async function readMarket(rp, x) {
+  const mo = new ethers.Contract(contracts.morpho, ABI.morpho, rp);
+  const mp = await mo.idToMarketParams(x.marketId), m = await mo.market(x.marketId);
+  const supply = Number(m[0]), borrow = Number(m[2]), util = supply ? borrow / supply : 0;
+  const irm = new ethers.Contract(mp[3], ABI.irm, rp);
+  const rate = Number(await irm.borrowRateView(mp, m)) / 1e18, borrowApy = Math.exp(rate * 31536000) - 1;
+  return { supplied: supply / 10 ** x.decimals, util, borrowApy, supplyApy: borrowApy * util * (1 - Number(m[5]) / 1e18) };
+}
+async function readUser(rp) {
+  const q = S.q[S.qi]; if (!q) return;
+  const hook = new ethers.Contract(contracts.hook, ABI.hook, rp);
+  S.data.kyc = await hook.kyc(S.user);
+  S.data.bal = Number(ethers.formatUnits(await new ethers.Contract(q.address, ABI.erc20, rp).balanceOf(S.user), q.decimals));
+  S.data.held = Number(ethers.formatUnits(await new ethers.Contract(contracts.share, ABI.erc20, rp).balanceOf(S.user), 18));
+}
+function renderStatic2() { renderFacts(); renderLendBorrow(); renderBuy(); }
+
+// ---------- wallet + buy ----------
+async function connect() {
+  const st = $('status'); st.className = 'status'; st.textContent = '';
+  if (!window.ethereum) { st.className = 'status err'; st.textContent = 'No browser wallet found. Open this page in MetaMask or another wallet browser.'; return; }
+  try {
+    S.provider = new ethers.BrowserProvider(window.ethereum);
+    await S.provider.send('eth_requestAccounts', []);
+    const want = '0x' + C.chain.chainId.toString(16);
+    if ((await S.provider.send('eth_chainId', [])) !== want) await S.provider.send('wallet_switchEthereumChain', [{ chainId: want }]);
+    S.provider = new ethers.BrowserProvider(window.ethereum);
+    S.signer = await S.provider.getSigner(); S.user = await S.signer.getAddress();
+    await refresh();
+  } catch (e) { st.className = 'status err'; st.textContent = nice(e); }
+}
+function nice(e) {
+  const m = (e && (e.shortMessage || e.reason || e.message)) || String(e);
+  if (/user rejected|ACTION_REJECTED/i.test(m)) return 'You cancelled the request in your wallet.';
+  if (/NotAllowed/.test(m)) return 'The pool refused this swap. Your wallet may not be verified yet.';
+  if (/ReceiverNotApproved/.test(m)) return 'This wallet is not approved to hold the shares.';
+  if (/slippage/i.test(m)) return 'The price moved while you were buying. Try a smaller amount.';
+  return m.length > 160 ? m.slice(0, 160) + '…' : m;
+}
+async function buy() {
+  const st = $('status'), q = S.q[S.qi]; st.className = 'status'; st.textContent = '';
+  try {
+    const a = parseFloat($('amt').value); if (!(a > 0)) throw new Error('Enter an amount above zero.');
+    const amountIn = ethers.parseUnits(a.toFixed(q.decimals), q.decimals);
+    const est = a / q.spot * (1 - q.fee / 1e6) * 0.98;           // 2% slippage allowance
+    const minOut = ethers.parseUnits(est.toFixed(8), 18);
+    const tok = new ethers.Contract(q.address, ABI.erc20, S.signer);
+    if ((await tok.allowance(S.user, contracts.router)) < amountIn) { st.textContent = 'Approve ' + q.symbol + ' in your wallet…'; await (await tok.approve(contracts.router, amountIn)).wait(); }
+    st.textContent = 'Confirm the purchase in your wallet…';
+    const router = new ethers.Contract(contracts.router, ABI.router, S.signer);
+    const tx = await router.swapExactIn(q.key, !q.shareIs0, amountIn, minOut, Math.floor(Date.now() / 1000) + 600);
+    st.textContent = 'Waiting for the network…'; await tx.wait();
+    st.className = 'status good'; st.textContent = 'Done. The shares are in your wallet.';
+    await refresh();
+  } catch (e) { st.className = 'status err'; st.textContent = nice(e); }
+}
+$('buyBtn').onclick = buy;
+$('amt').addEventListener('input', renderBuy);
+
+renderStatic(); renderBuy();
+refresh().catch(e => console.warn(e));
+</script>
+</body>
+</html>

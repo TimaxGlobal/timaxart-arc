@@ -1,0 +1,28 @@
+{
+  "name": "Dreams (ART002)",
+  "description": "Marble; Fractional shares of one physical painting valued at GBP 100000, split into 100000 shares.",
+  "image": "",
+  "animation_url": "https://app.timaxpay.com/offer/paintings/ART002/video1.mp4",
+  "attributes": [
+    {
+      "trait_type": "Artist",
+      "value": "Alexey Vladimirov"
+    },
+    {
+      "trait_type": "Year",
+      "value": "2004"
+    },
+    {
+      "trait_type": "Medium",
+      "value": "Sculpture:15.2 W x 26.2 H x 4.7 D in"
+    },
+    {
+      "trait_type": "Valuation (GBP)",
+      "value": 100000
+    },
+    {
+      "trait_type": "Total shares",
+      "value": 100000
+    }
+  ]
+}
